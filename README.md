@@ -7,6 +7,7 @@
 A sleek, responsive, and feature-rich music player built with **HTML, CSS, and JavaScript**.
 
 🌐 **Live Demo:** [🎵 MusiWave](https://music-player-musi-wave.vercel.app/)
+📂 **GitHub Repository:** [MusicPlayer-MusiWave](https://github.com/Shrutika2026/MusicPlayer-MusiWave)
 
 </div>
 
