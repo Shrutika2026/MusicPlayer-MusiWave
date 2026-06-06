@@ -816,15 +816,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // Populate duration asynchronously via temp audio objects
-    const tempAudio = new Audio(song.file);
-    tempAudio.addEventListener("loadedmetadata", () => {
-      const durElement = row.querySelector(".song-duration");
-      if (durElement) durElement.textContent = formatTime(tempAudio.duration);
-    });
-
+    // Use placeholder duration immediately for fast initial rendering.
+    // Audio metadata is loaded only when playback starts to avoid blocking refresh.
     return row;
   }
+
+  let allSongsRenderToken = 0;
 
   function renderAllSongsList() {
     DOM.allSongsList.innerHTML = "";
@@ -843,10 +840,34 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    filteredSongs.forEach((song, idx) => {
-      const row = createSongRow(song, idx, "all");
-      DOM.allSongsList.appendChild(row);
-    });
+    allSongsRenderToken += 1;
+    const renderToken = allSongsRenderToken;
+    const chunkSize = 30;
+
+    const scheduleChunk = (callback) => {
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(callback, { timeout: 100 });
+      } else {
+        setTimeout(callback, 0);
+      }
+    };
+
+    const renderChunk = (startIndex) => {
+      if (renderToken !== allSongsRenderToken) return;
+
+      const endIndex = Math.min(filteredSongs.length, startIndex + chunkSize);
+      for (let idx = startIndex; idx < endIndex; idx += 1) {
+        const song = filteredSongs[idx];
+        const row = createSongRow(song, idx, "all");
+        DOM.allSongsList.appendChild(row);
+      }
+
+      if (endIndex < filteredSongs.length) {
+        scheduleChunk(() => renderChunk(endIndex));
+      }
+    };
+
+    renderChunk(0);
   }
 
   // --- FAVORITES MODULE ---
