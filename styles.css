@@ -1767,8 +1767,8 @@ h4,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
-  border-radius: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
   background-color: var(--bg-dark);
   border: 1px solid var(--border);
   cursor: pointer;
@@ -1784,9 +1784,9 @@ h4,
 }
 
 .playlist-select-item .song-thumbnail {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
   flex-shrink: 0;
 }
 
@@ -1803,8 +1803,8 @@ h4,
 }
 
 .playlist-select-item .song-name {
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 13px;
   color: var(--text-main);
   white-space: nowrap;
   overflow: hidden;
@@ -1812,11 +1812,20 @@ h4,
 }
 
 .playlist-select-item .song-artist {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.playlist-select-item:hover {
+  background-color: var(--glass-bg-hover);
+}
+
+.playlist-select-item.selected {
+  border-color: var(--primary);
+  background-color: rgba(108, 99, 255, 0.12);
 }
 
 .playlist-select-item {
