@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MusiWave - Ultimate Music Experience</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Core stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-neongroove">
+
+  <!-- Background 3D decorative elements -->
+  <div class="music-bg-elements">
+    <div class="bg-grid-3d"></div>
+    <div class="bg-blob bg-blob-1"></div>
+    <div class="bg-blob bg-blob-2"></div>
+    <div class="bg-blob bg-blob-3"></div>
+    <div class="bg-blob bg-blob-4"></div>
+    
+    <div class="bg-note note-1"><i class="fa-solid fa-music"></i></div>
+    <div class="bg-note note-2"><i class="fa-solid fa-guitar"></i></div>
+    <div class="bg-note note-3"><i class="fa-solid fa-headphones"></i></div>
+    <div class="bg-note note-4"><i class="fa-solid fa-compact-disc"></i></div>
+    <div class="bg-note note-5"><i class="fa-solid fa-sliders"></i></div>
+    <div class="bg-note note-6"><i class="fa-solid fa-wave-square"></i></div>
+  </div>
+
+  <!-- Core Audio Element -->
+  <audio id="main-audio"></audio>
+
+  <!-- App Wrapper -->
+  <div class="app-container">
+
+    <!-- Sidebar (Desktop Navigation) -->
+    <aside class="sidebar" id="app-sidebar">
+      <div class="brand">
+        <i class="fa-solid fa-compact-disc fa-spin" style="animation-duration: 4s;"></i>
+        <span class="brand-text">MusiWave</span>
+      </div>
+
+      <nav class="nav-menu">
+        <a class="nav-item active" data-view="home">
+          <i class="fa-solid fa-house"></i>
+          <span>Home & Library</span>
+        </a>
+        <a class="nav-item" data-view="playlists">
+          <i class="fa-solid fa-list-ul"></i>
+          <span>Playlists</span>
+        </a>
+        <a class="nav-item" data-view="favorites">
+          <i class="fa-solid fa-heart"></i>
+          <span>Favorites</span>
+        </a>
+        <a class="nav-item" data-view="lyrics">
+          <i class="fa-solid fa-music"></i>
+          <span>Lyrics</span>
+        </a>
+        <a class="nav-item" data-view="themes">
+          <i class="fa-solid fa-palette"></i>
+          <span>Themes</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- Playlists section inside sidebar -->
+      <div class="playlist-section">
+        <div class="playlist-header">
+          <span>My Playlists</span>
+          <i class="fa-solid fa-plus" id="sidebar-add-playlist-btn" title="Create Playlist"></i>
+        </div>
+        <div class="playlist-list" id="sidebar-playlists">
+          <!-- Dynamic custom playlists will list here -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      <!-- Sticky Header -->
+      <header class="top-header">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="search-input" placeholder="Search songs, artists...">
+        </div>
+      </header>
+
+      <!-- View Panel: HOME -->
+      <section class="view-panel active" id="panel-home">
+        <!-- Hero Spotlight Cover -->
+        <div class="hero-banner">
+          <div class="hero-art" id="hero-art-cover">
+            <i class="fa-solid fa-music"></i>
+          </div>
+          <div class="hero-details">
+            <span class="hero-tag">Now Playing Spotlight</span>
+            <h1 class="hero-title" id="hero-song-title">Welcome to MusiWave</h1>
+            <p class="hero-desc" id="hero-song-desc">Select a track from your library below to start listening. Create playlists, favorite songs, change themes, download files, and share links!</p>
+            <div class="hero-buttons">
+              <button class="btn-primary" id="hero-play-btn">
+                <i class="fa-solid fa-play"></i> Play Now
+              </button>
+              <button class="btn-secondary" id="hero-fav-btn">
+                <i class="fa-regular fa-heart"></i> Add to Favorite
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">
+          <h2>All Songs</h2>
+          <span style="font-size: 14px; color: var(--text-muted);" id="songs-count-badge">11 songs</span>
+        </div>
+
+        <!-- Songs list table -->
+        <div class="song-list-container">
+          <div class="song-row-header">
+            <span>#</span>
+            <span>Title</span>
+            <span class="song-album-header">Album</span>
+            <span class="song-duration-header"><i class="fa-regular fa-clock"></i></span>
+            <span style="text-align: right;">Actions</span>
+          </div>
+          <div id="all-songs-list">
+            <!-- Dynamic song rows -->
+          </div>
+        </div>
+      </section>
+
+      <!-- View Panel: PLAYLISTS -->
+      <section class="view-panel" id="panel-playlists">
+        <div class="section-title">
+          <h2>Playlists</h2>
+          <button class="btn-primary" id="create-playlist-btn">
+            <i class="fa-solid fa-plus"></i> Create Playlist
+          </button>
+        </div>
+
+        <!-- Grid of playlist cards -->
+        <div class="playlists-grid" id="playlists-grid">
+          <!-- Dynamic playlist cards -->
+        </div>
+
+        <!-- Playlist Detail view (shown when a card is selected) -->
+        <div id="playlist-detail-view" style="display: none;">
+          <div class="playlist-detail-header">
+            <div class="playlist-detail-cover" id="playlist-detail-cover">
+              <i class="fa-solid fa-music"></i>
+            </div>
+            <div class="playlist-detail-info">
+              <span class="playlist-detail-tag">Playlist</span>
+              <h1 class="playlist-detail-title" id="playlist-detail-title">Playlist Name</h1>
+              <p class="playlist-detail-desc" id="playlist-detail-desc">Playlist Description</p>
+              <span class="playlist-detail-meta" id="playlist-detail-meta">0 songs</span>
+            </div>
+          </div>
+
+          <div class="playlist-detail-actions">
+            <button class="btn-primary" id="playlist-detail-play-btn">
+              <i class="fa-solid fa-play"></i> Play Playlist
+            </button>
+            <button class="btn-secondary" id="playlist-detail-delete-btn" style="border-color: #ff5e62; color: #ff5e62;">
+              <i class="fa-regular fa-trash-can"></i> Delete Playlist
+            </button>
+            <button class="btn-secondary" id="playlist-detail-back-btn">
+              <i class="fa-solid fa-arrow-left"></i> Back to Grid
+            </button>
+          </div>
+
+          <div class="song-list-container">
+            <div class="song-row-header">
+              <span>#</span>
+              <span>Title</span>
+              <span class="song-album-header">Album</span>
+              <span class="song-duration-header"><i class="fa-regular fa-clock"></i></span>
+              <span style="text-align: right;">Actions</span>
+            </div>
+            <div id="playlist-songs-list">
+              <!-- Dynamic playlist song rows -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View Panel: FAVORITES -->
+      <section class="view-panel" id="panel-favorites">
+        <div class="section-title">
+          <h2>Favorites</h2>
+          <span style="font-size: 14px; color: var(--text-muted);" id="fav-count-badge">0 songs</span>
+        </div>
+
+        <div class="song-list-container">
+          <div class="song-row-header">
+            <span>#</span>
+            <span>Title</span>
+            <span class="song-album-header">Album</span>
+            <span class="song-duration-header"><i class="fa-regular fa-clock"></i></span>
+            <span style="text-align: right;">Actions</span>
+          </div>
+          <div id="favorites-songs-list">
+            <!-- Dynamic favorited song rows -->
+          </div>
+        </div>
+      </section>
+
+      <!-- View Panel: LYRICS -->
+      <section class="view-panel" id="panel-lyrics">
+        <div class="section-title">
+          <h2>Song Lyrics</h2>
+        </div>
+
+        <div class="lyrics-view-container">
+          <!-- Left info box -->
+          <div class="lyrics-left">
+            <div class="lyrics-album-art" id="lyrics-art">
+              <i class="fa-solid fa-music"></i>
+            </div>
+            <div class="lyrics-track-info">
+              <h3 id="lyrics-song-title">Song Title</h3>
+              <p id="lyrics-song-artist">Artist Name</p>
+            </div>
+          </div>
+
+          <!-- Right lyrics text box -->
+          <div class="lyrics-content-container">
+            <div class="lyrics-header-flex">
+              <h4 id="lyrics-panel-status">Lyrics</h4>
+              <button class="btn-secondary" id="lyrics-edit-btn" style="padding: 6px 12px; font-size: 12px;">
+                <i class="fa-solid fa-pen"></i> Edit Lyrics
+              </button>
+            </div>
+            <p class="lyrics-text" id="lyrics-text-display">No song selected</p>
+            <textarea class="lyrics-editor" id="lyrics-editor-textarea"></textarea>
+            <div class="modal-buttons" id="lyrics-edit-actions" style="display: none; justify-content: flex-start; margin-top: 12px;">
+              <button class="btn-primary" id="lyrics-save-btn" style="padding: 6px 16px; font-size: 12px;">Save</button>
+              <button class="btn-secondary" id="lyrics-cancel-btn" style="padding: 6px 16px; font-size: 12px;">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View Panel: THEMES -->
+      <section class="view-panel" id="panel-themes">
+        <div class="section-title">
+          <h2>Themes & Customization</h2>
+        </div>
+
+        <div class="theme-container">
+          <!-- Preset themes -->
+          <div>
+            <h3 style="margin-bottom: 16px; font-size: 18px;">Preset Themes</h3>
+            <div class="presets-grid">
+              <!-- Preset Cards -->
+              <div class="theme-card active" data-theme="neongroove">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #7c3aed;"></div>
+                  <div class="theme-circle" style="background-color: #0c0a1f;"></div>
+                  <div class="theme-circle" style="background-color: #22d3ee;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Neon Groove</h4>
+                  <p>Cyberpunk blue-purple glass with neon beats</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="spotify">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #1db954;"></div>
+                  <div class="theme-circle" style="background-color: #121212;"></div>
+                  <div class="theme-circle" style="background-color: #ffffff;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Spotify Green</h4>
+                  <p>Dark backdrop with vivid emerald green accents</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="sunset">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #ff5e62;"></div>
+                  <div class="theme-circle" style="background-color: #170e24;"></div>
+                  <div class="theme-circle" style="background-color: #fff0f5;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Sunset Glow</h4>
+                  <p>Warm coral tones merging with deep dark violet</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="cyberpunk">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #00f0ff;"></div>
+                  <div class="theme-circle" style="background-color: #120524;"></div>
+                  <div class="theme-circle" style="background-color: #ff0080;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Cyberpunk Neon</h4>
+                  <p>Cybernetic blue paired with neon pink accents</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="glacier">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #0088ff;"></div>
+                  <div class="theme-circle" style="background-color: #ffffff;"></div>
+                  <div class="theme-circle" style="background-color: #112233;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Glacier Breeze</h4>
+                  <p>Light frosted theme with sharp royal blue</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="amethyst">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #9d4edd;"></div>
+                  <div class="theme-circle" style="background-color: #120926;"></div>
+                  <div class="theme-circle" style="background-color: #f3e8ff;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Amethyst Dream</h4>
+                  <p>Mystical neon purple with violet backdrops</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="obsidian">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #ffffff;"></div>
+                  <div class="theme-circle" style="background-color: #0c0c0c;"></div>
+                  <div class="theme-circle" style="background-color: #888888;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Minimalist Obsidian</h4>
+                  <p>Clean monochromatic dark and light elements</p>
+                </div>
+              </div>
+
+              <!-- 8 NEW PRESET THEMES -->
+              <div class="theme-card" data-theme="neonwave">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #ff007f;"></div>
+                  <div class="theme-circle" style="background-color: #06010d;"></div>
+                  <div class="theme-circle" style="background-color: #ffffff;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Neon Wave</h4>
+                  <p>Vaporwave hot pink alongside deep violet space darks</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="cyberbeats">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #10b981;"></div>
+                  <div class="theme-circle" style="background-color: #01080e;"></div>
+                  <div class="theme-circle" style="background-color: #e0f2fe;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Cyber Beats</h4>
+                  <p>Grid neon green mixed with metallic deep cyber-dark</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="electricpulse">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #f59e0b;"></div>
+                  <div class="theme-circle" style="background-color: #090401;"></div>
+                  <div class="theme-circle" style="background-color: #fffbeb;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Electric Pulse</h4>
+                  <p>High voltage gold paired with dark copper pulse shadow</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="oceanwaves">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #06b6d4;"></div>
+                  <div class="theme-circle" style="background-color: #010b10;"></div>
+                  <div class="theme-circle" style="background-color: #f0fdfa;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Ocean Waves</h4>
+                  <p>Deep oceanic teal overlaying midnight blue backdrops</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="sunsetremix">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #ec4899;"></div>
+                  <div class="theme-circle" style="background-color: #140509;"></div>
+                  <div class="theme-circle" style="background-color: #fff1f2;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Sunset Remix</h4>
+                  <p>Fiery sunset magenta blends with dark rose dusk</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="cosmicflow">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #8b5cf6;"></div>
+                  <div class="theme-circle" style="background-color: #08020f;"></div>
+                  <div class="theme-circle" style="background-color: #faf5ff;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Cosmic Flow</h4>
+                  <p>Space violet blending with glowing nebula clouds</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="aurora">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #2dd4bf;"></div>
+                  <div class="theme-circle" style="background-color: #020f12;"></div>
+                  <div class="theme-circle" style="background-color: #f0fdfa;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Aurora</h4>
+                  <p>Northern lights mint green alongside boreal night sky</p>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme="midnightgroove">
+                <div class="theme-preview-circles">
+                  <div class="theme-circle" style="background-color: #f43f5e;"></div>
+                  <div class="theme-circle" style="background-color: #070104;"></div>
+                  <div class="theme-circle" style="background-color: #fff1f2;"></div>
+                </div>
+                <div class="theme-card-info">
+                  <h4>Midnight Groove</h4>
+                  <p>Glowing rose red over deep charcoal night velvet</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Theme Creator -->
+          <div class="custom-theme-box">
+            <h3 style="margin-bottom: 8px; font-size: 18px;">Custom Accent Color</h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">Create your own dynamic signature accent color. Changes take effect immediately.</p>
+            <div class="color-pickers-list">
+              <div class="picker-row">
+                <div class="picker-info">
+                  <label for="custom-primary-color">Primary Accent Color</label>
+                  <span>Buttons, sliders, and highlights</span>
+                </div>
+                <div class="picker-input-wrapper">
+                  <input type="color" id="custom-primary-color" value="#7c3aed">
+                </div>
+              </div>
+              <button class="btn-primary" id="reset-theme-btn" style="margin-top: 12px; align-self: flex-start; padding: 10px 20px; font-size: 13px;">
+                <i class="fa-solid fa-arrow-rotate-left"></i> Reset to Default
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Now Playing Sidebar Panel (Desktop) -->
+    <aside class="now-playing-panel" id="app-now-playing">
+      <div class="now-playing-header">
+        <span>Music Queue</span>
+        <button class="now-playing-close-btn" id="btn-close-now-playing" title="Close Panel">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="now-playing-body" id="now-playing-body">
+        <div class="sidebar-queue-grid">
+
+          <!-- TOP: Last Played Songs -->
+          <div class="sidebar-recents-section">
+            <div class="vis-title sidebar-section-label">Last Played Songs</div>
+            <div class="sidebar-recents-list" id="sidebar-recents-list">
+              <!-- Dynamic mini rows of last played songs will be populated by JS -->
+            </div>
+          </div>
+
+          <!-- BOTTOM: Now Playing Card -->
+          <div class="sidebar-now-playing-section">
+            <div class="vis-title sidebar-section-label">Now Playing</div>
+            <div class="now-playing-card" id="now-playing-card-container">
+
+              <div class="card-art-3d-stage">
+                <div class="card-art-wrapper card-art-3d card-art-circle">
+                  <img src="" id="card-cover-img" alt="Cover Art">
+                  <div class="card-art-glow"></div>
+                  <div class="card-art-ring"></div>
+                </div>
+              </div>
+
+              <div class="card-meta">
+                <h4 id="card-song-title">Not Playing</h4>
+                <p id="card-song-artist">Choose a track</p>
+              </div>
+
+              <!-- Beat Wave Visualizer -->
+              <div class="beat-visualizer-zone">
+                <div class="beat-bars-container" id="card-beat-bars">
+                  <span class="beat-bar"></span>
+                  <span class="beat-bar"></span>
+                  <span class="beat-bar"></span>
+                  <span class="beat-bar"></span>
+                  <span class="beat-bar"></span>
+                  <span class="beat-bar"></span>
+                  <span class="beat-bar"></span>
+                  <span class="beat-bar"></span>
+                  <span class="beat-bar"></span>
+                  <span class="beat-bar"></span>
+                  <span class="beat-bar"></span>
+                  <span class="beat-bar"></span>
+                </div>
+                <svg class="beat-wave-svg" viewBox="0 0 300 40" preserveAspectRatio="none">
+                  <path class="beat-wave-path beat-wave-1" d="M0,20 Q37,5 75,20 T150,20 T225,20 T300,20 L300,40 L0,40 Z"></path>
+                  <path class="beat-wave-path beat-wave-2" d="M0,25 Q37,35 75,25 T150,25 T225,25 T300,25 L300,40 L0,40 Z"></path>
+                </svg>
+              </div>
+
+              <!-- Compact progress seeker -->
+              <div class="card-progress-row">
+                <span class="card-time-label" id="card-time-current">0:00</span>
+                <div class="card-progress-track" id="card-progress-track" title="Click to Seek">
+                  <div class="card-progress-fill" id="card-progress-fill"></div>
+                </div>
+                <span class="card-time-label" id="card-time-total">0:00</span>
+              </div>
+
+              <div class="card-playback-controls">
+                <button type="button" class="card-control-btn" id="card-ctrl-shuffle" title="Shuffle — random song order">
+                  <i class="fa-solid fa-shuffle"></i>
+                </button>
+                <button type="button" class="card-control-btn" id="card-ctrl-prev" title="Previous Track">
+                  <i class="fa-solid fa-backward-step"></i>
+                </button>
+                <button type="button" class="card-control-btn card-play-pause-btn" id="card-ctrl-play-pause" title="Play/Pause">
+                  <i class="fa-solid fa-play"></i>
+                </button>
+                <button type="button" class="card-control-btn" id="card-ctrl-next" title="Next Track">
+                  <i class="fa-solid fa-forward-step"></i>
+                </button>
+                <button type="button" class="card-control-btn" id="card-ctrl-repeat" title="Repeat — loop current song">
+                  <i class="fa-solid fa-repeat"></i>
+                </button>
+              </div>
+
+              <div class="card-extra-actions">
+                <button type="button" class="card-lyrics-toggle-btn" id="card-ctrl-lyrics" title="Show / hide lyrics">
+                  <i class="fa-solid fa-quote-right"></i> Lyrics
+                </button>
+                <button type="button" class="card-download-btn" id="card-ctrl-download" title="Download current song">
+                  <i class="fa-solid fa-circle-down"></i> Download
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Lyrics box — separate scroll area, does not overlap player -->
+            <div class="sidebar-lyrics-panel" id="sidebar-lyrics-panel">
+              <div class="sidebar-lyrics-header">
+                <span class="vis-title sidebar-section-label">Song Lyrics</span>
+              </div>
+              <div class="sidebar-lyrics-scroll" id="now-playing-lyrics-snippet">
+                Select a song and tap Lyrics to view the full text here.
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Mobile Bottom Navigation (Visible only on tablets & mobile screens) -->
+    <nav class="mobile-nav">
+      <a class="mobile-nav-item active" data-view="home">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </a>
+      <a class="mobile-nav-item" data-view="playlists">
+        <i class="fa-solid fa-list-ul"></i>
+        <span>Playlists</span>
+      </a>
+      <a class="mobile-nav-item" data-view="favorites">
+        <i class="fa-solid fa-heart"></i>
+        <span>Favorites</span>
+      </a>
+      <a class="mobile-nav-item" data-view="themes">
+        <i class="fa-solid fa-palette"></i>
+        <span>Themes</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- Bottom Playback Deck (Fixed player bar) -->
+  <footer class="playbar">
+    <!-- Mobile top mini progress bar -->
+    <div class="mobile-mini-progress">
+      <div class="mobile-mini-progress-fill" id="mobile-progress-fill"></div>
+    </div>
+
+    <div class="playbar-inner">
+      <!-- Left: Song details -->
+      <div class="playbar-left" id="playbar-track-details">
+        <div class="current-thumbnail" id="playbar-art">
+          <i class="fa-solid fa-music"></i>
+        </div>
+        <div class="current-track-info">
+          <span class="current-title" id="playbar-song-title">Not Playing</span>
+          <span class="current-artist" id="playbar-song-artist">Choose a song</span>
+        </div>
+        <button class="action-btn fav-btn" id="playbar-fav-btn" title="Add to Favorites">
+          <i class="fa-regular fa-heart"></i>
+        </button>
+      </div>
+
+      <!-- Center: Playback controls (middle of bar) -->
+      <div class="playbar-controls-center">
+        <div class="playback-controls">
+          <button type="button" class="control-btn" id="ctrl-shuffle" title="Shuffle — random song order">
+            <i class="fa-solid fa-shuffle"></i>
+          </button>
+          <button type="button" class="control-btn" id="ctrl-prev" title="Previous Track">
+            <i class="fa-solid fa-backward-step"></i>
+          </button>
+          <button type="button" class="control-btn play-pause-btn" id="ctrl-play-pause" title="Play / Pause">
+            <i class="fa-solid fa-play"></i>
+          </button>
+          <button type="button" class="control-btn" id="ctrl-next" title="Next Track">
+            <i class="fa-solid fa-forward-step"></i>
+          </button>
+          <button type="button" class="control-btn" id="ctrl-repeat" title="Repeat — loop current song">
+            <i class="fa-solid fa-repeat"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: Volume & Quick actions -->
+      <div class="playbar-right">
+      <button class="action-btn" id="playbar-nowplaying-btn" title="Toggle Now Playing Panel" style="color: var(--primary);">
+        <i class="fa-solid fa-square-caret-right"></i>
+      </button>
+      <button class="action-btn" id="playbar-lyrics-btn" title="Show Lyrics">
+        <i class="fa-solid fa-quote-right"></i>
+      </button>
+      <button class="action-btn" id="playbar-share-btn" title="Share Song Link">
+        <i class="fa-solid fa-share-nodes"></i>
+      </button>
+      <button class="action-btn" id="playbar-download-btn" title="Download Offline">
+        <i class="fa-solid fa-circle-down"></i>
+      </button>
+
+      <div class="volume-container">
+        <button class="action-btn" id="playbar-mute-btn" title="Mute/Unmute" style="padding: 2px;">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+        <input type="range" id="volume-slider" min="0" max="1" value="0.7" step="0.05">
+      </div>
+      </div>
+    </div>
+
+    <!-- Progress timeline spanning full width -->
+    <div class="playbar-progress-row">
+      <div class="progress-container">
+        <span class="time-label" id="time-current">0:00</span>
+        <div class="slider-wrapper" id="progress-slider-wrapper">
+          <input type="range" id="progress-slider" min="0" max="100" value="0" step="0.1" class="progress-slider">
+        </div>
+        <span class="time-label" id="time-total">0:00</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MOBILE FULLSCREEN PLAYER OVERLAY -->
+  <div class="mobile-expanded-player" id="expanded-player" style="display: none;">
+    <button class="mobile-expanded-close" id="expanded-close-btn">
+      <i class="fa-solid fa-chevron-down"></i>
+    </button>
+
+    <div class="mobile-expanded-art-3d-wrapper">
+      <div class="vinyl-record-container" id="expanded-vinyl-container">
+        <div class="vinyl-disc" id="expanded-vinyl-disc">
+          <div class="vinyl-grooves"></div>
+          <div class="vinyl-center-label" id="expanded-vinyl-label"></div>
+        </div>
+        <div class="now-playing-cover-wrapper">
+          <img src="" id="expanded-cover-img" alt="Cover Art">
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-expanded-meta">
+      <h2 class="mobile-expanded-title" id="expanded-title">Song Title</h2>
+      <p class="mobile-expanded-artist" id="expanded-artist">Artist Name</p>
+    </div>
+
+    <div class="mobile-expanded-progress-container">
+      <div class="progress-container">
+        <span class="time-label" id="expanded-time-current">0:00</span>
+        <div class="slider-wrapper" style="flex: 1;">
+          <input type="range" id="expanded-progress-slider" min="0" max="100" value="0" step="0.1" class="progress-slider">
+        </div>
+        <span class="time-label" id="expanded-time-total">0:00</span>
+      </div>
+    </div>
+
+    <div class="mobile-expanded-controls">
+      <button class="control-btn" id="expanded-ctrl-shuffle" title="Shuffle" style="font-size: 18px;">
+        <i class="fa-solid fa-shuffle"></i>
+      </button>
+      <button class="control-btn" id="expanded-ctrl-prev" title="Prev" style="font-size: 20px;">
+        <i class="fa-solid fa-backward-step"></i>
+      </button>
+      <button class="control-btn play-pause-btn" id="expanded-ctrl-play-pause" style="width: 60px; height: 60px; font-size: 24px;">
+        <i class="fa-solid fa-play"></i>
+      </button>
+      <button class="control-btn" id="expanded-ctrl-next" title="Next" style="font-size: 20px;">
+        <i class="fa-solid fa-forward-step"></i>
+      </button>
+      <button class="control-btn" id="expanded-ctrl-repeat" title="Repeat" style="font-size: 18px;">
+        <i class="fa-solid fa-repeat"></i>
+      </button>
+    </div>
+
+    <div class="mobile-expanded-bottom-utils">
+      <button class="action-btn fav-btn" id="expanded-fav-btn">
+        <i class="fa-regular fa-heart"></i>
+      </button>
+      <button class="action-btn" id="expanded-lyrics-btn" title="Lyrics">
+        <i class="fa-solid fa-quote-right"></i>
+      </button>
+      <button class="action-btn" id="expanded-share-btn" title="Share">
+        <i class="fa-solid fa-share-nodes"></i>
+      </button>
+      <button class="action-btn" id="expanded-download-btn" title="Download">
+        <i class="fa-solid fa-circle-down"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE PLAYLIST -->
+  <div class="modal-overlay" id="modal-create-playlist">
+    <div class="modal-content">
+      <button class="modal-close" id="btn-close-create-playlist"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="modal-title">Create New Playlist</h3>
+      <div class="form-group">
+        <label for="playlist-name">Playlist Title</label>
+        <input type="text" id="playlist-name" placeholder="E.g., Hindi Classics, Chill Lofi, coding hours" required>
+      </div>
+      <div class="form-group">
+        <label for="playlist-desc">Description (Optional)</label>
+        <textarea id="playlist-desc" placeholder="Give your playlist a cool subtitle..."></textarea>
+      </div>
+      <div class="modal-buttons">
+        <button class="btn-secondary" id="btn-cancel-create-playlist">Cancel</button>
+        <button class="btn-primary" id="btn-save-playlist">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD TO PLAYLIST -->
+  <div class="modal-overlay" id="modal-add-to-playlist">
+    <div class="modal-content">
+      <button class="modal-close" id="btn-close-add-to-playlist"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="modal-title">Add Song to Playlist</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;" id="add-to-playlist-song-info">Add "Song Title" to your collections</p>
+      
+      <!-- Checkbox playlist items will render here -->
+      <div class="playlist-select-list" id="playlist-select-list">
+        <!-- Dyn selection rows -->
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn-secondary" id="btn-close-add-dialog">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SHARE SONG -->
+  <div class="modal-overlay" id="modal-share">
+    <div class="modal-content">
+      <button class="modal-close" id="btn-close-share"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="modal-title">Share Track</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;" id="share-song-title">Share "Song Name" with your friends</p>
+      
+      <div class="share-link-wrapper">
+        <input type="text" id="share-link-input" readonly>
+        <button class="btn-primary" id="btn-copy-link" style="padding: 10px 16px; font-size: 13px;">Copy</button>
+      </div>
+
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: 500;">Or share on social platforms:</p>
+      <div class="share-socials">
+        <a id="share-whatsapp" target="_blank" title="Share on WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        <a id="share-facebook" target="_blank" title="Share on Facebook"><i class="fa-brands fa-facebook"></i></a>
+        <a id="share-twitter" target="_blank" title="Share on Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+        <a id="share-telegram" target="_blank" title="Share on Telegram"><i class="fa-brands fa-telegram"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script Files -->
+  <div id="mode-toast" class="mode-toast" aria-live="polite"></div>
+  <script src="songs.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
