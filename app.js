@@ -23,7 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
     activeTheme: "neongroove",      // Selected visual theme class
     customAccent: null,            // Custom picked color (HEX)
     currentVolume: 0.7,            // Default volume (0 to 1)
-    sidebarLyricsOpen: false         // Sidebar inline lyrics panel
+    sidebarLyricsOpen: false,      // Sidebar inline lyrics panel
+    isSeeking: false               // User is dragging a progress slider
   };
 
   // --- AUDIO SETUP ---
@@ -161,6 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cardTimeTotal: document.getElementById("card-time-total"),
     cardProgressTrack: document.getElementById("card-progress-track"),
     cardProgressFill: document.getElementById("card-progress-fill"),
+    cardProgressSlider: document.getElementById("card-progress-slider"),
     cardBeatBars: document.getElementById("card-beat-bars"),
     cardCtrlRepeat: document.getElementById("card-ctrl-repeat"),
     cardCtrlPrev: document.getElementById("card-ctrl-prev"),
@@ -1386,28 +1388,26 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- AUDIO LOGIC EVENT BINDINGS ---
 
   audio.addEventListener("timeupdate", () => {
-    if (!audio.duration) return;
+    if (!audio.duration || state.isSeeking) return;
 
-    // Calculate progression percentage
     const progress = (audio.currentTime / audio.duration) * 100;
-    
-    // Update main playbar slider
-    DOM.progressSlider.value = progress;
-    DOM.timeCurrent.textContent = formatTime(audio.currentTime);
-    DOM.timeTotal.textContent = formatTime(audio.duration);
+    const currentLabel = formatTime(audio.currentTime);
+    const totalLabel = formatTime(audio.duration);
 
-    // Sync with mobile mini bar
+    DOM.progressSlider.value = progress;
+    DOM.timeCurrent.textContent = currentLabel;
+    DOM.timeTotal.textContent = totalLabel;
+
     DOM.mobileProgressFill.style.width = `${progress}%`;
 
-    // Sync with mobile expanded player slider
     DOM.expandedProgressSlider.value = progress;
-    DOM.expandedTimeCurrent.textContent = formatTime(audio.currentTime);
-    DOM.expandedTimeTotal.textContent = formatTime(audio.duration);
+    DOM.expandedTimeCurrent.textContent = currentLabel;
+    DOM.expandedTimeTotal.textContent = totalLabel;
 
-    // Sync with card progress bar on Desktop Right Panel
-    if (DOM.cardTimeCurrent) DOM.cardTimeCurrent.textContent = formatTime(audio.currentTime);
-    if (DOM.cardTimeTotal) DOM.cardTimeTotal.textContent = formatTime(audio.duration);
+    if (DOM.cardTimeCurrent) DOM.cardTimeCurrent.textContent = currentLabel;
+    if (DOM.cardTimeTotal) DOM.cardTimeTotal.textContent = totalLabel;
     if (DOM.cardProgressFill) DOM.cardProgressFill.style.width = `${progress}%`;
+    if (DOM.cardProgressSlider) DOM.cardProgressSlider.value = progress;
   });
 
   audio.addEventListener("ended", () => {
@@ -1434,25 +1434,39 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!audio.duration) return;
     const seekTime = (sliderVal / 100) * audio.duration;
     audio.currentTime = seekTime;
+
+    const currentLabel = formatTime(seekTime);
+    DOM.timeCurrent.textContent = currentLabel;
+    DOM.expandedTimeCurrent.textContent = currentLabel;
+    if (DOM.cardTimeCurrent) DOM.cardTimeCurrent.textContent = currentLabel;
+
+    DOM.progressSlider.value = sliderVal;
+    DOM.expandedProgressSlider.value = sliderVal;
+    if (DOM.cardProgressSlider) DOM.cardProgressSlider.value = sliderVal;
+
+    DOM.mobileProgressFill.style.width = `${sliderVal}%`;
+    if (DOM.cardProgressFill) DOM.cardProgressFill.style.width = `${sliderVal}%`;
   }
 
-  DOM.progressSlider.addEventListener("input", () => {
-    handleProgressSeek(DOM.progressSlider.value);
-  });
+  function bindProgressSeek(slider) {
+    if (!slider) return;
+    const startSeek = () => { state.isSeeking = true; };
+    const endSeek = () => { state.isSeeking = false; };
 
-  DOM.expandedProgressSlider.addEventListener("input", () => {
-    handleProgressSeek(DOM.expandedProgressSlider.value);
-  });
-
-  // Card progress bar click-to-seek
-  if (DOM.cardProgressTrack) {
-    DOM.cardProgressTrack.addEventListener("click", (e) => {
-      if (!audio.duration) return;
-      const rect = DOM.cardProgressTrack.getBoundingClientRect();
-      const seekPercent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      audio.currentTime = seekPercent * audio.duration;
-    });
+    slider.addEventListener("mousedown", startSeek);
+    slider.addEventListener("touchstart", startSeek, { passive: true });
+    slider.addEventListener("input", () => handleProgressSeek(slider.value));
+    slider.addEventListener("mouseup", endSeek);
+    slider.addEventListener("touchend", endSeek);
+    slider.addEventListener("change", endSeek);
   }
+
+  bindProgressSeek(DOM.progressSlider);
+  bindProgressSeek(DOM.expandedProgressSlider);
+  bindProgressSeek(DOM.cardProgressSlider);
+
+  document.addEventListener("mouseup", () => { state.isSeeking = false; });
+  document.addEventListener("touchend", () => { state.isSeeking = false; });
 
   // Mute volume control
   DOM.playbarMuteBtn.addEventListener("click", () => {

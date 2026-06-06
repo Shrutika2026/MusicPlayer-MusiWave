@@ -525,8 +525,9 @@
               <!-- Compact progress seeker -->
               <div class="card-progress-row">
                 <span class="card-time-label" id="card-time-current">0:00</span>
-                <div class="card-progress-track" id="card-progress-track" title="Click to Seek">
+                <div class="card-progress-track" id="card-progress-track" title="Drag to seek">
                   <div class="card-progress-fill" id="card-progress-fill"></div>
+                  <input type="range" id="card-progress-slider" class="card-progress-slider" min="0" max="100" value="0" step="0.1" aria-label="Seek in track">
                 </div>
                 <span class="card-time-label" id="card-time-total">0:00</span>
               </div>
