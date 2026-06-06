@@ -229,12 +229,12 @@ document.addEventListener("DOMContentLoaded", () => {
       state.recentlyPlayed = JSON.parse(savedRecents);
     }
 
-    // 4. Themes — Neon Groove is the default
+    // 4. Themes — Minimalist Obsidian is the default
     const savedTheme = localStorage.getItem("mw_active_theme");
     if (savedTheme) {
       state.activeTheme = savedTheme;
     } else {
-      state.activeTheme = "neongroove";
+      state.activeTheme = "obsidian";
     }
     const savedAccent = localStorage.getItem("mw_custom_accent");
     if (savedAccent) {
@@ -1837,7 +1837,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   DOM.resetThemeBtn.addEventListener("click", () => {
-    state.activeTheme = "neongroove";
+    state.activeTheme = "obsidian";
     state.customAccent = null;
     applyActiveTheme();
     renderThemesView();
