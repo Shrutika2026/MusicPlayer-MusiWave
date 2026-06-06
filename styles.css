@@ -736,9 +736,9 @@ h4,
   flex-direction: column;
 }
 
-.song-row-header {
+..song-row-header {
   display: grid;
-  grid-template-columns: 40px 1.5fr 1fr 1fr 120px;
+  grid-template-columns: 40px 1.6fr 1fr 1fr 190px;
   padding: 8px 16px;
   color: var(--text-muted);
   font-size: 12px;
@@ -750,7 +750,7 @@ h4,
 
 .song-row {
   display: grid;
-  grid-template-columns: 40px 1.5fr 1fr 1fr 120px;
+  grid-template-columns: 40px 1.6fr 1fr 1fr 190px;
   align-items: center;
   padding: 10px 16px;
   border-radius: 8px;
@@ -822,6 +822,7 @@ h4,
   align-items: center;
   gap: 16px;
   overflow: hidden;
+  min-width: 0;
 }
 
 .song-thumbnail {
@@ -848,11 +849,12 @@ h4,
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
 .song-name {
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-main);
   white-space: nowrap;
   overflow: hidden;
@@ -860,7 +862,7 @@ h4,
 }
 
 .song-artist {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -884,7 +886,9 @@ h4,
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 8px;
+  min-width: 180px;
+  flex-wrap: nowrap;
 }
 
 .action-btn {
@@ -893,8 +897,13 @@ h4,
   color: var(--text-muted);
   cursor: pointer;
   font-size: 14px;
+  width: 36px;
+  height: 36px;
   padding: 6px;
   border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
 }
 
@@ -1830,8 +1839,7 @@ h4,
   .mobile-nav {
     display: flex;
     position: fixed;
-    bottom: var(--playbar-height, 120px);
-    /* Sits right above the playback bar */
+    bottom: 0;
     left: 0;
     right: 0;
     height: 60px;
@@ -1839,7 +1847,7 @@ h4,
     border-top: 1px solid var(--border);
     justify-content: space-around;
     align-items: center;
-    z-index: 90;
+    z-index: 110;
     box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
   }
 
@@ -1869,6 +1877,7 @@ h4,
   /* Playbar Layout Adjustments for Mobile */
   .playbar {
     min-height: 90px;
+    bottom: 60px;
   }
 
   .playbar-inner {
@@ -1935,9 +1944,18 @@ h4,
     /* Hide headers on mobile */
   }
 
+  #panel-home .song-row-header {
+    display: none;
+  }
+
   .song-row {
-    grid-template-columns: 40px 1fr 60px;
-    padding: 8px 8px;
+    grid-template-columns: 40px 1fr 140px;
+    padding: 8px 10px;
+  }
+
+  .song-actions {
+    min-width: 140px;
+    gap: 8px;
   }
 
   .song-row-header .song-duration-header,

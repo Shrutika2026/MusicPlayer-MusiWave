@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     playlistDetailMeta: document.getElementById("playlist-detail-meta"),
     playlistDetailCover: document.getElementById("playlist-detail-cover"),
     playlistDetailPlayBtn: document.getElementById("playlist-detail-play-btn"),
+    playlistDetailAddBtn: document.getElementById("playlist-detail-add-btn"),
     playlistDetailDeleteBtn: document.getElementById("playlist-detail-delete-btn"),
     playlistDetailBackBtn: document.getElementById("playlist-detail-back-btn"),
     playlistSongsList: document.getElementById("playlist-songs-list"),
@@ -136,6 +137,12 @@ document.addEventListener("DOMContentLoaded", () => {
     btnCloseAddToPlaylist: document.getElementById("btn-close-add-to-playlist"),
     btnCloseAddDialog: document.getElementById("btn-close-add-dialog"),
     playlistSelectList: document.getElementById("playlist-select-list"),
+    modalEditPlaylistSongs: document.getElementById("modal-edit-playlist-songs"),
+    editPlaylistModalTitle: document.getElementById("edit-playlist-modal-title"),
+    editPlaylistSongInfo: document.getElementById("edit-playlist-song-info"),
+    playlistSongsEditList: document.getElementById("playlist-songs-edit-list"),
+    btnCloseEditPlaylistSongs: document.getElementById("btn-close-edit-playlist-songs"),
+    btnCloseEditPlaylistSongsBtn: document.getElementById("btn-close-edit-playlist-songs-btn"),
 
     btnCloseShare: document.getElementById("btn-close-share"),
     btnCopyLink: document.getElementById("btn-copy-link"),
@@ -1122,6 +1129,44 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.createPlaylistBtn.style.display = "flex";
   }
 
+  function openEditPlaylistSongsModal(playlistId) {
+    const pl = state.playlists.find(p => p.id === playlistId);
+    if (!pl) return;
+
+    state.editingPlaylistId = playlistId;
+    DOM.modalEditPlaylistSongs.classList.add("active");
+    DOM.editPlaylistModalTitle.textContent = `Edit "${pl.name}" Songs`;
+    DOM.editPlaylistSongInfo.textContent = `Toggle tracks to add or remove them from "${pl.name}."`;
+    DOM.playlistSongsEditList.innerHTML = "";
+
+    state.songs.forEach(song => {
+      const inPlaylist = pl.songs.includes(song.id);
+      const item = document.createElement("div");
+      item.className = `playlist-select-item ${inPlaylist ? 'selected' : ''}`;
+      item.innerHTML = `
+        <span>${song.title} — ${song.artist}</span>
+        <i class="fa-solid fa-circle-check"></i>
+      `;
+
+      item.addEventListener("click", () => {
+        if (pl.songs.includes(song.id)) {
+          pl.songs = pl.songs.filter(id => id !== song.id);
+          item.classList.remove("selected");
+        } else {
+          pl.songs.push(song.id);
+          item.classList.add("selected");
+        }
+        savePlaylistsToStorage();
+        renderPlaylists();
+        if (state.activePlaylistId === playlistId) {
+          openPlaylistDetail(playlistId);
+        }
+      });
+
+      DOM.playlistSongsEditList.appendChild(item);
+    });
+  }
+
   function openAddToPlaylistModal(songId) {
     const song = getSongById(songId);
     if (!song) return;
@@ -1382,6 +1427,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function closeAllModals() {
     DOM.modalCreatePlaylist.classList.remove("active");
     DOM.modalAddToPlaylist.classList.remove("active");
+    DOM.modalEditPlaylistSongs.classList.remove("active");
     DOM.modalShare.classList.remove("active");
   }
 
@@ -1650,6 +1696,8 @@ document.addEventListener("DOMContentLoaded", () => {
   DOM.btnCloseCreatePlaylist.addEventListener("click", closeAllModals);
   DOM.btnCloseAddToPlaylist.addEventListener("click", closeAllModals);
   DOM.btnCloseAddDialog.addEventListener("click", closeAllModals);
+  DOM.btnCloseEditPlaylistSongs.addEventListener("click", closeAllModals);
+  DOM.btnCloseEditPlaylistSongsBtn.addEventListener("click", closeAllModals);
   DOM.btnCloseShare.addEventListener("click", closeAllModals);
 
   // Save actions
@@ -1668,6 +1716,12 @@ document.addEventListener("DOMContentLoaded", () => {
   DOM.playlistDetailDeleteBtn.addEventListener("click", () => {
     if (state.activePlaylistId) {
       deletePlaylist(state.activePlaylistId);
+    }
+  });
+
+  DOM.playlistDetailAddBtn.addEventListener("click", () => {
+    if (state.activePlaylistId) {
+      openEditPlaylistSongsModal(state.activePlaylistId);
     }
   });
 

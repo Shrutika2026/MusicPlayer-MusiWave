@@ -119,13 +119,6 @@
 
         <!-- Songs list table -->
         <div class="song-list-container">
-          <div class="song-row-header">
-            <span>#</span>
-            <span>Title</span>
-            <span class="song-album-header">Album</span>
-            <span class="song-duration-header"><i class="fa-regular fa-clock"></i></span>
-            <span style="text-align: right;">Actions</span>
-          </div>
           <div id="all-songs-list">
             <!-- Dynamic song rows -->
           </div>
@@ -164,6 +157,9 @@
             <button class="btn-primary" id="playlist-detail-play-btn">
               <i class="fa-solid fa-play"></i> Play Playlist
             </button>
+            <button class="btn-secondary" id="playlist-detail-add-btn">
+              <i class="fa-solid fa-circle-plus"></i> Add Songs
+            </button>
             <button class="btn-secondary" id="playlist-detail-delete-btn" style="border-color: #ff5e62; color: #ff5e62;">
               <i class="fa-regular fa-trash-can"></i> Delete Playlist
             </button>
@@ -173,13 +169,6 @@
           </div>
 
           <div class="song-list-container">
-            <div class="song-row-header">
-              <span>#</span>
-              <span>Title</span>
-              <span class="song-album-header">Album</span>
-              <span class="song-duration-header"><i class="fa-regular fa-clock"></i></span>
-              <span style="text-align: right;">Actions</span>
-            </div>
             <div id="playlist-songs-list">
               <!-- Dynamic playlist song rows -->
             </div>
@@ -195,13 +184,6 @@
         </div>
 
         <div class="song-list-container">
-          <div class="song-row-header">
-            <span>#</span>
-            <span>Title</span>
-            <span class="song-album-header">Album</span>
-            <span class="song-duration-header"><i class="fa-regular fa-clock"></i></span>
-            <span style="text-align: right;">Actions</span>
-          </div>
           <div id="favorites-songs-list">
             <!-- Dynamic favorited song rows -->
           </div>
@@ -780,6 +762,19 @@
 
       <div class="modal-buttons">
         <button class="btn-secondary" id="btn-close-add-dialog">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT PLAYLIST SONGS -->
+  <div class="modal-overlay" id="modal-edit-playlist-songs">
+    <div class="modal-content">
+      <button class="modal-close" id="btn-close-edit-playlist-songs"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="modal-title" id="edit-playlist-modal-title">Edit Playlist Songs</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;" id="edit-playlist-song-info">Select songs to keep them in this playlist.</p>
+      <div class="playlist-select-list" id="playlist-songs-edit-list"></div>
+      <div class="modal-buttons">
+        <button class="btn-secondary" id="btn-close-edit-playlist-songs-btn">Close</button>
       </div>
     </div>
   </div>
