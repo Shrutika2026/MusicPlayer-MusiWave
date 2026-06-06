@@ -51,6 +51,15 @@ document.addEventListener("DOMContentLoaded", () => {
     playlistDetailBackBtn: document.getElementById("playlist-detail-back-btn"),
     playlistSongsList: document.getElementById("playlist-songs-list"),
     
+    // Songs modal elements
+    modalEditPlaylistSongs: document.getElementById("modal-edit-playlist-songs"),
+    editPlaylistModalTitle: document.getElementById("edit-playlist-modal-title"),
+    editPlaylistSongInfo: document.getElementById("edit-playlist-song-info"),
+    playlistSongsEditList: document.getElementById("playlist-songs-edit-list"),
+    playlistEditSearchInput: document.getElementById("playlist-edit-search"),
+    btnCloseEditPlaylistSongs: document.getElementById("btn-close-edit-playlist-songs"),
+    btnAddPlaylistSongs: document.getElementById("btn-add-playlist-songs"),
+    
     // Lists Containers
     allSongsList: document.getElementById("all-songs-list"),
     favoritesSongsList: document.getElementById("favorites-songs-list"),
@@ -1129,42 +1138,70 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.createPlaylistBtn.style.display = "flex";
   }
 
-  function openEditPlaylistSongsModal(playlistId) {
-    const pl = state.playlists.find(p => p.id === playlistId);
+  function renderEditPlaylistSongsList(filterText = "") {
+    if (!DOM.playlistSongsEditList || !state.editingPlaylistId) return;
+
+    const pl = state.playlists.find(p => p.id === state.editingPlaylistId);
     if (!pl) return;
 
-    state.editingPlaylistId = playlistId;
-    DOM.modalEditPlaylistSongs.classList.add("active");
-    DOM.editPlaylistModalTitle.textContent = `Edit "${pl.name}" Songs`;
-    DOM.editPlaylistSongInfo.textContent = `Toggle tracks to add or remove them from "${pl.name}."`;
+    const query = filterText.trim().toLowerCase();
     DOM.playlistSongsEditList.innerHTML = "";
 
-    state.songs.forEach(song => {
-      const inPlaylist = pl.songs.includes(song.id);
+    const matchingSongs = state.songs.filter(song => {
+      return !query || song.title.toLowerCase().includes(query) || song.artist.toLowerCase().includes(query);
+    });
+
+    if (matchingSongs.length === 0) {
+      DOM.playlistSongsEditList.innerHTML = `
+        <div style="padding: 24px; text-align: center; color: var(--text-muted);">
+          No songs matched your search.
+        </div>`;
+      return;
+    }
+
+    matchingSongs.forEach(song => {
+      const selected = state.editingPlaylistSelection.has(song.id);
+      const cover = getCoverArt(song.id, song.title, song.artist);
       const item = document.createElement("div");
-      item.className = `playlist-select-item ${inPlaylist ? 'selected' : ''}`;
+      item.className = `playlist-select-item ${selected ? 'selected' : ''}`;
       item.innerHTML = `
-        <span>${song.title} — ${song.artist}</span>
+        <div class="song-meta-cell playlist-edit-meta">
+          <div class="song-thumbnail">
+            <img src="${cover}" alt="${song.title}">
+          </div>
+          <div class="song-name-artist">
+            <span class="song-name">${song.title}</span>
+            <span class="song-artist">${song.artist}</span>
+          </div>
+        </div>
         <i class="fa-solid fa-circle-check"></i>
       `;
 
       item.addEventListener("click", () => {
-        if (pl.songs.includes(song.id)) {
-          pl.songs = pl.songs.filter(id => id !== song.id);
+        if (state.editingPlaylistSelection.has(song.id)) {
+          state.editingPlaylistSelection.delete(song.id);
           item.classList.remove("selected");
         } else {
-          pl.songs.push(song.id);
+          state.editingPlaylistSelection.add(song.id);
           item.classList.add("selected");
-        }
-        savePlaylistsToStorage();
-        renderPlaylists();
-        if (state.activePlaylistId === playlistId) {
-          openPlaylistDetail(playlistId);
         }
       });
 
       DOM.playlistSongsEditList.appendChild(item);
     });
+  }
+
+  function openEditPlaylistSongsModal(playlistId) {
+    const pl = state.playlists.find(p => p.id === playlistId);
+    if (!pl) return;
+
+    state.editingPlaylistId = playlistId;
+    state.editingPlaylistSelection = new Set(pl.songs);
+    DOM.modalEditPlaylistSongs.classList.add("active");
+    DOM.editPlaylistModalTitle.textContent = `Edit "${pl.name}" Songs`;
+    DOM.editPlaylistSongInfo.textContent = `Search and select songs to add or remove from "${pl.name}."`;
+    DOM.playlistEditSearchInput.value = "";
+    renderEditPlaylistSongsList();
   }
 
   function openAddToPlaylistModal(songId) {
@@ -1454,6 +1491,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (DOM.cardTimeTotal) DOM.cardTimeTotal.textContent = totalLabel;
     if (DOM.cardProgressFill) DOM.cardProgressFill.style.width = `${progress}%`;
     if (DOM.cardProgressSlider) DOM.cardProgressSlider.value = progress;
+    updateAllProgressSliderBackgrounds();
   });
 
   audio.addEventListener("ended", () => {
@@ -1471,6 +1509,7 @@ document.addEventListener("DOMContentLoaded", () => {
   audio.addEventListener("loadedmetadata", () => {
     DOM.timeTotal.textContent = formatTime(audio.duration);
     DOM.expandedTimeTotal.textContent = formatTime(audio.duration);
+    updateAllProgressSliderBackgrounds();
   });
 
   // --- USER INTERACTION EVENT LISTENERS ---
@@ -1492,6 +1531,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     DOM.mobileProgressFill.style.width = `${sliderVal}%`;
     if (DOM.cardProgressFill) DOM.cardProgressFill.style.width = `${sliderVal}%`;
+    updateAllProgressSliderBackgrounds();
+  }
+
+  function updateRangeSliderBackground(slider) {
+    if (!slider) return;
+    const value = parseFloat(slider.value) || 0;
+    slider.style.background = `linear-gradient(90deg, var(--primary) ${value}%, var(--slider-bg) ${value}%)`;
+  }
+
+  function updateAllProgressSliderBackgrounds(value) {
+    updateRangeSliderBackground(DOM.progressSlider);
+    updateRangeSliderBackground(DOM.expandedProgressSlider);
+    updateRangeSliderBackground(DOM.cardProgressSlider);
   }
 
   function bindProgressSeek(slider) {
@@ -1501,7 +1553,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     slider.addEventListener("mousedown", startSeek);
     slider.addEventListener("touchstart", startSeek, { passive: true });
-    slider.addEventListener("input", () => handleProgressSeek(slider.value));
+    slider.addEventListener("input", () => {
+      handleProgressSeek(slider.value);
+      updateRangeSliderBackground(slider);
+    });
     slider.addEventListener("mouseup", endSeek);
     slider.addEventListener("touchend", endSeek);
     slider.addEventListener("change", endSeek);
@@ -1697,7 +1752,6 @@ document.addEventListener("DOMContentLoaded", () => {
   DOM.btnCloseAddToPlaylist.addEventListener("click", closeAllModals);
   DOM.btnCloseAddDialog.addEventListener("click", closeAllModals);
   DOM.btnCloseEditPlaylistSongs.addEventListener("click", closeAllModals);
-  DOM.btnCloseEditPlaylistSongsBtn.addEventListener("click", closeAllModals);
   DOM.btnCloseShare.addEventListener("click", closeAllModals);
 
   // Save actions
@@ -1723,6 +1777,23 @@ document.addEventListener("DOMContentLoaded", () => {
     if (state.activePlaylistId) {
       openEditPlaylistSongsModal(state.activePlaylistId);
     }
+  });
+
+  DOM.playlistEditSearchInput.addEventListener("input", (e) => {
+    renderEditPlaylistSongsList(e.target.value);
+  });
+
+  DOM.btnAddPlaylistSongs.addEventListener("click", () => {
+    if (!state.editingPlaylistId) return;
+    const pl = state.playlists.find(p => p.id === state.editingPlaylistId);
+    if (!pl) return;
+    pl.songs = Array.from(state.editingPlaylistSelection);
+    savePlaylistsToStorage();
+    renderPlaylists();
+    if (state.activePlaylistId === pl.id) {
+      openPlaylistDetail(pl.id);
+    }
+    closeAllModals();
   });
 
   DOM.playlistDetailBackBtn.addEventListener("click", closePlaylistDetail);
