@@ -1,6 +1,6 @@
-# 🎵 MusiWave
-
 <div align="center">
+
+# 🎵 MusiWave
 
 ### Modern Web-Based Music Player
 
